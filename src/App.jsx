@@ -109,9 +109,10 @@ function ApplicationShell() {
     if (!authReady) return;
     if (route === '/notifications' && user) load('notifications', api.notifications);
     else if (route === '/applications' && user) load('applications', api.applications);
-    else if (['/dashboard', '/manage', '/review', '/reports'].includes(route) && user) {
+    else if (['/dashboard', '/review', '/reports'].includes(route) && user) {
       load('dashboard', api.dashboard);
-      if (['employer', 'provider'].includes(user.role) && route === '/manage') load('ownListings', api.ownListings);
+    } else if (route === '/manage' && ['employer', 'provider'].includes(user.role)) {
+      load('ownListings', api.ownListings);
     } else if (!publicPaths.includes(route) && !['/login', '/register', '/locations'].includes(route) && !user) {
       navigate('/login');
     } else if (user && (
@@ -378,8 +379,32 @@ function ApplicationShell() {
     const ManagePage = user?.role === 'provider' ? ProviderManagePage : EmployerManagePage;
     content = <ManagePage user={user} listings={pageData.ownListings?.items || []} loading={Boolean(loading.ownListings || !pageData.ownListings)} error={errors.ownListings} onRetry={() => load('ownListings', api.ownListings)} onCreate={async (values) => {
       try {
-        await api.createListing(values);
-        await Promise.all([load('ownListings', api.ownListings), load('dashboard', api.dashboard)]);
+        const result = await api.createListing(values);
+        const newListing = {
+          id: Number(result.id),
+          kind: user?.role === 'provider' ? 'training' : 'job',
+          title: values.title,
+          location: values.location,
+          category: values.category,
+          description: values.description,
+          skills: values.skills,
+          deadline: values.deadline || null,
+          salary: values.salary || '',
+          listing_type: values.listing_type || '',
+          starts: values.starts || null,
+          ends: values.ends || null,
+          duration: values.duration || '',
+          slots: Number(values.slots || 0),
+          status: result.status || 'pending',
+          created_at: new Date().toISOString(),
+        };
+        setPageData((current) => ({
+          ...current,
+          ownListings: {
+            ...(current.ownListings || {}),
+            items: [newListing, ...(current.ownListings?.items || []).filter((item) => Number(item.id) !== newListing.id)],
+          },
+        }));
         notify('Your listing was submitted for review.');
         return true;
       } catch (caught) {
