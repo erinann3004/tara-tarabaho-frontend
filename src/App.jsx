@@ -446,7 +446,12 @@ function ApplicationShell() {
   } else if (route === '/review') {
     content = <ReviewPage data={pageData.dashboard} loading={Boolean(loading.dashboard)} error={errors.dashboard} onRetry={() => load('dashboard', api.dashboard)} onModerate={async (id, status, kind = 'job') => {
       try {
-        await api.moderateListing(id, status, kind);
+        const result = await api.moderateListing(id, status, kind);
+        if (status === 'published' && !result.already_moderated) {
+          void api.dispatchListingAlerts(id, kind).catch((caught) => {
+            console.error('Unable to dispatch listing email or push alerts:', caught);
+          });
+        }
         setPageData((current) => ({ ...current, dashboard: current.dashboard ? {
           ...current.dashboard,
           pending_listings: (current.dashboard.pending_listings || []).filter((item) => !(Number(item.id) === Number(id) && item.kind === kind)),

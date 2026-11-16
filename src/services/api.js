@@ -75,6 +75,11 @@ export const api = {
   closeJobListing: (listingId) => request('/listings/close-job', { method: 'POST', body: JSON.stringify({ listing_id: listingId }) }),
   closeTrainingListing: (listingId) => request('/listings/close-training', { method: 'POST', body: JSON.stringify({ listing_id: listingId }) }),
   moderateListing: (listingId, status, kind = 'job') => request('/listings/moderate', { method: 'POST', body: JSON.stringify({ listing_id: listingId, status, kind }) }),
+  dispatchListingAlerts: (listingId, kind) => request('/listings/dispatch-alerts', {
+    method: 'POST',
+    body: JSON.stringify({ listing_id: listingId, kind }),
+    keepalive: true
+  }),
   updateApplication: (applicationId, status, kind = 'job') => request('/applications/status', { method: 'POST', body: JSON.stringify({ application_id: applicationId, status, kind }) }),
   withdrawApplication: (applicationId, kind = 'job') => request('/applications/withdraw', { method: 'POST', body: JSON.stringify({ application_id: applicationId, kind }) }),
   subscribePush: (subscription) => request('/push-subscriptions', { method: 'POST', body: JSON.stringify(subscription) }),
