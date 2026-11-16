@@ -1,6 +1,12 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || (
+function normalizeApiBase(value) {
+  const base = String(value || '').replace(/\/+$/, '');
+  if (!base) return '/api';
+  return /\/api$/i.test(base) ? base : `${base}/api`;
+}
+
+const API_BASE = normalizeApiBase(import.meta.env.VITE_API_BASE_URL || (
   import.meta.env.DEV ? '/api' : `${window.TARA_APP_BASE || ''}/backend/LavaLust/public/api`
-);
+));
 const pendingGetRequests = new Map();
 
 export async function request(path, options = {}) {
