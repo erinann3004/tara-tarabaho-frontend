@@ -19,7 +19,7 @@ const reactRoutes = new Set([
 ]);
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? (process.env.VITE_BASE || '/tara-trabaho/frontend/dist/') : '/',
+  base: command === 'build' ? (process.env.VITE_BASE || '/') : '/',
   plugins: [
     react(),
     {
