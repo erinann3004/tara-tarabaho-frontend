@@ -394,6 +394,7 @@ function ApplicationShell() {
           starts: values.starts || null,
           ends: values.ends || null,
           duration: values.duration || '',
+          schedule: values.schedule || '',
           slots: Number(values.slots || 0),
           status: result.status || 'pending',
           created_at: new Date().toISOString(),

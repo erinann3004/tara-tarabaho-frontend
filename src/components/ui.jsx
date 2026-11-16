@@ -67,7 +67,7 @@ export function ListingCard({ listing, kind, user, isSaved = false, onToggleSave
     <p>{listing.description || listing.summary || 'Explore this local opportunity and build your next career step.'}</p>
     {tags.length > 0 && <div className="chips">{tags.slice(0, 4).map((tag) => <span className="chip" key={tag}>{tag}</span>)}</div>}
     <div className="listing-footer">
-      <span className="listing-date">{isTraining ? `Starts ${listing.starts || 'date to be announced'}` : (listing.salary || 'See details')}</span>
+      <span className="listing-date">{isTraining ? `Starts ${listing.starts || 'date to be announced'}${listing.schedule && listing.schedule !== listing.starts ? ` · ${listing.schedule}` : ''}` : (listing.salary || 'See details')}</span>
       <div className="listing-actions">
         <button className={`button button-small ${isSaved ? 'button-secondary' : 'button-ghost'}`} type="button" aria-pressed={isSaved} onClick={() => onToggleSave?.(listing.id)}>{isSaved ? 'Saved' : 'Save'}</button>
         <button className="button button-primary button-small" onClick={() => onApply(listing, isTraining ? 'training' : 'job')} disabled={user && !['student'].includes(user.role)}>
@@ -146,6 +146,7 @@ export function OpportunityDialog({ listing, kind, user, onClose, onSubmit, onCl
           {isJob ? <span><small>Posted</small><strong>{formatDate(listing.created_at)}</strong></span> : <>
             {listing.starts && <span><small>Program starts</small><strong>{formatDate(listing.starts)}</strong></span>}
             {listing.ends && <span><small>Program ends</small><strong>{formatDate(listing.ends)}</strong></span>}
+            {listing.schedule && listing.schedule !== listing.starts && <span><small>Training days and time</small><strong>{listing.schedule}</strong></span>}
             {listing.duration && <span><small>Duration</small><strong>{listing.duration}</strong></span>}
             {listing.slots > 0 && <span><small>Available slots</small><strong>{listing.slots}</strong></span>}
           </>}

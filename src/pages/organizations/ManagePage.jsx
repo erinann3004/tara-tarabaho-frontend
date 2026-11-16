@@ -11,7 +11,7 @@ export function ManagePage({ user, listings, loading, error, onRetry, onCreate, 
   const submitLock = useRef(false);
   const [editingListing, setEditingListing] = useState(null);
   const [listingFilter, setListingFilter] = useState('hiring');
-  const [form, setForm] = useState({ title: '', location: '', category: '', description: '', skills: '', deadline: '', salary: '', listing_type: 'Full-time', starts: '', ends: '', duration: '', slots: 10 });
+  const [form, setForm] = useState({ title: '', location: '', category: '', description: '', skills: '', deadline: '', salary: '', listing_type: 'Full-time', starts: '', ends: '', duration: '', schedule: '', slots: 10 });
   const listingGroups = {
     hiring: listings.filter((listing) => (listing.status || '').toLowerCase() === 'published'),
     done: listings.filter((listing) => (listing.status || '').toLowerCase() === 'closed'),
@@ -29,7 +29,7 @@ export function ManagePage({ user, listings, loading, error, onRetry, onCreate, 
       const saved = editingListing ? await onUpdateJob(editingListing.id, values) : await onCreate(values);
       if (!saved) return;
       setEditingListing(null);
-      setForm((state) => ({ ...state, title: '', location: '', category: '', description: '', skills: '', deadline: '', salary: '', starts: '', ends: '', duration: '' }));
+      setForm((state) => ({ ...state, title: '', location: '', category: '', description: '', skills: '', deadline: '', salary: '', starts: '', ends: '', duration: '', schedule: '' }));
     } finally {
       submitLock.current = false;
       setIsSubmitting(false);
@@ -47,6 +47,7 @@ export function ManagePage({ user, listings, loading, error, onRetry, onCreate, 
       deadline: listing.deadline || '',
       salary: listing.salary || '',
       listing_type: listing.listing_type || 'Full-time',
+      schedule: listing.schedule || '',
     }));
   };
   const closeListing = async (listing) => {
@@ -68,7 +69,7 @@ export function ManagePage({ user, listings, loading, error, onRetry, onCreate, 
       <label className="form-label">{isTraining ? 'Program title' : 'Job title'}<input required name="title" value={form.title} onChange={update} /></label>
       <div className="form-row"><label className="form-label">Location<select required name="location" value={form.location} onChange={update}><option value="" disabled>Select a location</option>{form.location && !orientalMindoroLocations.includes(form.location) && <option value={form.location}>{form.location}</option>}{orientalMindoroLocations.map((location) => <option key={location} value={location}>{location}</option>)}</select></label><label className="form-label">{isTraining ? 'Training category' : 'Industry'}<select required name="category" value={form.category} onChange={update}><option value="" disabled>{isTraining ? 'Select a training category' : 'Select an industry'}</option>{form.category && !categoryOptions.includes(form.category) && <option value={form.category}>{form.category}</option>}{categoryOptions.map((category) => <option key={category} value={category}>{category}</option>)}</select></label></div>
       {!isTraining && <div className="form-row"><label className="form-label">Employment type<select name="listing_type" value={form.listing_type} onChange={update}>{['Full-time', 'Part-time', 'Contract', 'Temporary'].map((value) => <option key={value}>{value}</option>)}</select></label><label className="form-label">Salary range<input name="salary" value={form.salary} onChange={update} placeholder="e.g. ₱18,000–₱25,000" /></label></div>}
-      {isTraining && <><div className="form-row"><label className="form-label">Start date<input required type="date" name="starts" value={form.starts} onChange={update} /></label><label className="form-label">End date<input required type="date" name="ends" value={form.ends} onChange={update} min={form.starts || undefined} /></label></div><label className="form-label">Available slots<input required type="number" min="1" name="slots" value={form.slots} onChange={update} /></label></>}
+      {isTraining && <><div className="form-row"><label className="form-label">Start date<input required type="date" name="starts" value={form.starts} onChange={update} /></label><label className="form-label">End date<input required type="date" name="ends" value={form.ends} onChange={update} min={form.starts || undefined} /></label></div><label className="form-label">Training days and time<input required maxLength="100" name="schedule" value={form.schedule} onChange={update} placeholder="e.g. Mon–Fri, 8:00 AM–5:00 PM" /><small>Include the days and start/end time of the sessions.</small></label><label className="form-label">Available slots<input required type="number" min="1" name="slots" value={form.slots} onChange={update} /></label></>}
       <label className="form-label">Relevant skills <small>Separate skills with commas</small><input name="skills" value={form.skills} onChange={update} placeholder="Communication, customer service" /></label>
       <label className="form-label">Description<textarea required minLength="25" name="description" value={form.description} onChange={update} rows="5" /></label>
       <div className="listing-form-actions"><button className="button button-primary" disabled={isSubmitting}>{isSubmitting ? (editingListing ? 'Saving…' : 'Submitting…') : editingListing ? 'Save changes' : 'Submit for review'} <Icon name="arrow" /></button>{editingListing && <button className="button button-ghost" type="button" disabled={isSubmitting} onClick={() => { setEditingListing(null); setForm((state) => ({ ...state, title: '', category: '', description: '', skills: '', deadline: '', salary: '' })); }}>Cancel edit</button>}</div>
