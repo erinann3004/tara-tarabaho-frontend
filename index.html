@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8faf8" />
+    <meta name="description" content="Find local jobs, training, and career opportunities across Oriental Mindoro." />
+    <title>TARA-TRABAHO | Local opportunity. Real skills.</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const path = window.location.pathname.replace(/\/+$/, '');
+      const frontendPath = path.match(/\/frontend(?:\/|$)/i);
+      window.TARA_APP_BASE = frontendPath
+        ? path.slice(0, frontendPath.index)
+        : window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/')) || '';
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
